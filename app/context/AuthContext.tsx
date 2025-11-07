@@ -7,14 +7,14 @@ import { SetStateAction } from "react";
 
 type AuthContextType = {
    session: any,
-   setSession: (s: React.Dispatch<SetStateAction<any>>) => void
+   setSession: React.Dispatch<SetStateAction<any>>
 }
 
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 const AuthProvider = ({children} : { children: React.ReactNode }) => {
-   const [session, setSession] = useState<any>("")
+   const [session, setSession] = useState<any >(null)
 
    useEffect(()=> {
       async function getCurrentSession(){
@@ -28,6 +28,17 @@ const AuthProvider = ({children} : { children: React.ReactNode }) => {
             setSession(sessionResult.data.session)
          }
       })
+
+      const {  data }  = supabase.auth.onAuthStateChange((event, session) => {
+         setSession(session)
+      })
+
+      return ()=> {
+         data.subscription.unsubscribe(); //Removes listener
+      }
+
+
+
       
    }, [])
 
