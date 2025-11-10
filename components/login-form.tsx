@@ -6,15 +6,28 @@ import { Input } from './ui/input';
 import { Card, CardTitle, CardHeader, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { supabase } from '@/lib/supabaseClient';
+import { useRouter } from 'next/router';
+
 const LoginForm = () => {
    const [email, setEmail] = useState<string>("");
    const [password, setPassword] = useState<string>("");
+   const [error, setError] = useState<string>("")
 
-   async function handleLogin(){
+   const router = useRouter()
+
+   async function handleLogin():Promise<void>{
       const response = await supabase.auth.signInWithPassword({
           email : email,
          password : password
       })
+
+      if (response.error){
+         // throw new Error("Login failed")
+         setError("Login failed")
+         return 
+      }
+      router.push("/")
+      return 
    }
    
    return (
