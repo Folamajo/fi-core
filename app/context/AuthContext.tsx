@@ -1,5 +1,6 @@
-import { createContext, useContext, useEffect } from "react";
+"use client";
 
+import { createContext, useContext, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useState } from "react";
 import { SetStateAction } from "react";
@@ -20,9 +21,7 @@ export const AuthProvider = ({children} : { children: React.ReactNode }) => {
    useEffect(()=> {
       async function getCurrentSession(){
          let currentSession = await supabase.auth.getSession();
-
          return currentSession
-        
       } 
       
       getCurrentSession().then(sessionResult => {
@@ -38,10 +37,6 @@ export const AuthProvider = ({children} : { children: React.ReactNode }) => {
       return ()=> {
          data.subscription.unsubscribe(); //Removes listener
       }
-
-
-
-      
    }, [])
    let currentUser;
    if (session){
