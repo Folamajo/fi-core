@@ -1,8 +1,50 @@
-
+"use client"
+import { useRouter } from "next/navigation";
+import { useAuth } from "../context/AuthContext";
+import { useEffect, useState } from "react";
 
 export default function ProtectedLayout({children}: {children: React.ReactNode}){
-   return <div> {children}</div>
+   const [checkSession, setCheckSession] = useState<string>("")
+   const router = useRouter()
+   const { session } = useAuth()
+
+   useEffect(()=> {
+      setCheckSession("loading")
+
+      if (session === null ){
+      // redirect
+         setCheckSession("no session")
+         // router.push('/auth/login') 
+      }
+      else{
+         setCheckSession("confirmed")
+      }
+   }, [session])
+
+   if(checkSession === "no session"){
+      router.push('/auth/login') 
+   }
+   
+ // stay on page
+   
+
+   return (
+      <div> {children}</div>
+   )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
