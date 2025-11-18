@@ -24,6 +24,6 @@ export async function GET(request: NextRequest) {
       redirect(`/auth/error?error=${error?.message}`);
     }
   }
-//redirect
+//redirect 
   redirect(`/auth/error?error=No token hash or type`);
 }
