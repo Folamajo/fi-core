@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
-
+import Link from "next/link";
 export default function Home() {
    return (
       <main className="flex flex-col">
          
          <nav className ="border flex justify-center">
             <div className= 'border w-[1000px]'>
-               <Button>Login</Button>
+               <Button><Link href="/auth/login">Login</Link></Button>
             </div>
             
          </nav>
