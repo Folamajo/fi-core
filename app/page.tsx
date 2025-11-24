@@ -1,6 +1,25 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useAuth } from "./context/AuthContext";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 export default function Home() {
+
+   const { session } = useAuth();
+   const router = useRouter();
+
+   useEffect(()=> {
+      if (session){
+            // route to the dashboard ??
+         router.push('/protected')
+      
+      }
+
+
+   },[session]);
+   
    return (
       <main className="flex flex-col">
          
@@ -19,6 +38,12 @@ export default function Home() {
       </main>
    );
 }
+
+
+
+
+
+
 
 // import { DeployButton } from "@/components/deploy-button";
 // import { EnvVarWarning } from "@/components/env-var-warning";
