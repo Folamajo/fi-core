@@ -31,10 +31,30 @@ export default function ProtectedLayout({children}: {children: React.ReactNode})
    return (
       <div className="flex"> 
          <div className="border w-[20em] h-screen">
-            Sidebar
+            <div className="flex justify-between p-4  border-b">
+               <p>LOGO</p> 
+               <button>|-</button>
+            </div>               
+
+            <section className="p-4">
+               <h1 className="mb-4">GENERAL</h1>
+               <ul className="flex flex-col gap-2">
+                  <li>Dashboard</li>
+                  <li>Projects</li>
+                  <li>Settings</li>
+               </ul>
+
+            </section>
+
+
          </div>
          <div className="border w-full">
-            {children}
+            <nav className="border p-4">
+               navigation or search 
+            </nav>
+            <div>
+               {children}
+            </div>
          </div>
          
          
