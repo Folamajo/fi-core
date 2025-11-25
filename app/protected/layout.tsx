@@ -22,14 +22,24 @@ export default function ProtectedLayout({children}: {children: React.ReactNode})
    }, [session])
 
    if(checkSession === "no session"){
-      router.push('/auth/login') 
+      // router.push('/auth/login') 
    }
    
- // stay on page
+
    
 
    return (
-      <div> {children}</div>
+      <div className="flex"> 
+         <div className="border w-[20em] h-screen">
+            Sidebar
+         </div>
+         <div className="border w-full">
+            {children}
+         </div>
+         
+         
+         
+      </div>
    )
 }
 
