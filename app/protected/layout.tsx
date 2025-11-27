@@ -22,7 +22,7 @@ export default function ProtectedLayout({children}: {children: React.ReactNode})
    }, [session])
 
    if(checkSession === "no session"){
-      // router.push('/auth/login') 
+      // router.push('/auth/login') //uncomment here 
    }
    
 
