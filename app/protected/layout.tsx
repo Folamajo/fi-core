@@ -55,6 +55,7 @@ export default function ProtectedLayout({children}: {children: React.ReactNode})
             <div>
                {children}
             </div>
+            {/* Add new component tomorrow  */}
          </div>
          
          
