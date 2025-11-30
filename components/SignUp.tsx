@@ -3,13 +3,13 @@ import { Card, CardTitle, CardHeader, CardContent } from './ui/card';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { supabase } from '@/lib/supabaseClient';
-
+import { useRouter } from 'next/navigation';
 
 const SignUpForm = () => {
 
    const [email, setEmail] = useState<string>("");
    const [password, setPassword] = useState<string>("");
-
+   const router = useRouter()
    const handleSignUp = async ():Promise<void>=>{
       const {data, error} = await supabase.auth.signUp({
          email: email,
@@ -18,7 +18,11 @@ const SignUpForm = () => {
 
       if(error){
          throw new Error("There was an error signing up this account!")
+         
       }
+      router.push('/protected')
+      
+
    }
 
    return (
@@ -42,6 +46,10 @@ const SignUpForm = () => {
 }
 
 export default SignUpForm
+
+
+
+
 
 
 
