@@ -2,39 +2,38 @@ import React, { useState } from 'react'
 import { Card, CardTitle, CardHeader, CardContent } from './ui/card';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
-import { FcGoogle } from 'react-icons/fc';
+import { supabase } from '@/lib/supabaseClient';
 
 
-
-const signUp = () => {
+const SignUpForm = () => {
 
    const [email, setEmail] = useState<string>("");
-   const [password, setPassword] = useState<string>("")
+   const [password, setPassword] = useState<string>("");
 
+   const handleSignUp = async ():Promise<void>=>{
+      const {data, error} = await supabase.auth.signUp({
+         email: email,
+         password: password,
+      })
 
+      if(error){
+         throw new Error("There was an error signing up this account!")
+      }
+   }
 
    return (
     
-       <div className="border flex ">
+       <div>
          <Card className="w-[25em] mx-auto ">
             <CardHeader>
                <CardTitle className="text-2xl">Login</CardTitle>
 
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
-               <Input value = {email} type = "email" placeholder='Email' onChange={(event:React.ChangeEvent<HTMLInputElement>)=> setEmail(event.target.value)}/>
-               <Input value = {password} type = "password" placeholder='Password' onChange= {(event:React.ChangeEvent<HTMLInputElement>)=> setPassword(event.target.value)}/>
-               {
-                 error &&  <p>{error}</p>
-               }
-               <Button onClick={handleLogin}>Login</Button>
-               <Button onClick = {continueWithGoogle}>
-                  <FcGoogle />
-                  Continue with Google 
-               </Button>
+               <Input value = {email} type = "email" placeholder='Email' onChange={(event:React.ChangeEvent<HTMLInputElement>)=>setEmail(event.target.value)}/>
+               <Input value = {password} type = "password" placeholder='Password' onChange={(event:React.ChangeEvent<HTMLInputElement>)=>setPassword(event.target.value)} />
+               <Button onClick={handleSignUp}>Signup</Button>
             </CardContent>
-            
-
          </Card>
         
          
@@ -42,7 +41,7 @@ const signUp = () => {
    )
 }
 
-export default signUp
+export default SignUpForm
 
 
 
