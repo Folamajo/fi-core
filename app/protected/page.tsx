@@ -1,5 +1,6 @@
-import React from 'react';
-import { useState } from 'react';
+"use client";
+import React, { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabaseClient';
 
 
 type Projects = {
@@ -18,6 +19,23 @@ const UserHome = () => {
 
    const [loading, setLoading] = useState<string>("");
    const [projects, setProjects] = useState<Projects[]>([])
+
+   useEffect(()=> {
+      setLoading("Fetching projects")
+      async function getUserProjects(){
+          const {data, error} = await supabase
+          .from('projects')
+          .select()
+
+         if (error){
+            throw new Error ("There was an issue fetching user's projects")
+         }
+
+         setProjects(data)
+      }
+
+     getUserProjects();
+   }, [])
 
    return (
       <div>
