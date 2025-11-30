@@ -1,14 +1,32 @@
-import React from 'react'
+import React from 'react';
+import { useState } from 'react';
+
+
+type Projects = {
+   id : string,
+   created_at : string,
+   project_name : string,
+   user_id : string
+}
+
+
 
 const UserHome = () => {
-  return (
+
+
+
+
+   const [loading, setLoading] = useState<string>("");
+   const [projects, setProjects] = useState<Projects[]>([])
+
+   return (
       <div>
          <h1>Welcome UserName...</h1>
          <p>Your projects</p>
          <p>Create a project</p>         
 
       </div>
-  )
+   )
 }
 
 export default UserHome
