@@ -1,8 +1,8 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-
-
+import { Popover } from '@/components/ui/popover';
+import { PopoverTrigger } from '@radix-ui/react-popover';
 type Projects = {
    id : string,
    created_at : string,
@@ -40,9 +40,25 @@ const UserHome = () => {
    return (
       <div>
          <h1>Welcome UserName...</h1>
-         <p>Your projects</p>
-         <p>Create a project</p>         
+      
 
+         {
+            projects.length === 0 && (
+               <>
+                  <p>No projects yet.</p>
+               </>
+            )
+         }
+         <p>Create a project</p>         
+         <Popover>
+            <PopoverTrigger>
+               New Analysis
+            </PopoverTrigger>
+            <PopoverContent>
+               
+            </PopoverContent>
+
+         </Popover>
       </div>
    )
 }
