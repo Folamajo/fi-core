@@ -21,6 +21,7 @@ const UserHome = () => {
    const [loading, setLoading] = useState<string>("");
    const [projects, setProjects] = useState<Projects[]>([])
    const [displayInputBox, setDisplayInputBox] = useState<boolean>(false)
+   const [selectedFile, setSelectedFile] = useState<FileList | null> (null)
 
    useEffect(()=> {
       setLoading("Fetching projects")
@@ -57,11 +58,13 @@ const UserHome = () => {
                <PopoverTrigger>
                   New Analysis
                </PopoverTrigger>
-               <PopoverContent>
-                  <Input className="border-0" type="file" />
-                  <Button onClick={()=>setDisplayInputBox(true)}>Paste feedback</Button>
+               <PopoverContent className="">
+                  <div>
+                     <Input  className="border-0" type="file" /> <Button>Parse</Button>
+                  </div>
+                  
+                  <Button className="mt-2" onClick={()=>setDisplayInputBox(true)}>Paste feedback</Button>
                </PopoverContent>
-
             </Popover>
          </div>
          
@@ -91,6 +94,9 @@ export default UserHome
 
 
 
+
+
+// onChange={(event:React.ChangeEvent<HTMLInputElement>)=>setSelectedFile()}
 // import { redirect } from "next/navigation";
 
 // import { createClient } from "@/lib/supabase/server";
