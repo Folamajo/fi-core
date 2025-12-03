@@ -58,7 +58,7 @@ const UserHome = () => {
                   New Analysis
                </PopoverTrigger>
                <PopoverContent>
-                  <Button>CSV</Button>
+                  <Input className="border-0" type="file" />
                   <Button onClick={()=>setDisplayInputBox(true)}>Paste feedback</Button>
                </PopoverContent>
 
