@@ -1,8 +1,9 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { Popover } from '@/components/ui/popover';
-import { PopoverTrigger } from '@radix-ui/react-popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 type Projects = {
    id : string,
    created_at : string,
@@ -13,12 +14,13 @@ type Projects = {
 
 
 const UserHome = () => {
-
+   
 
 
 
    const [loading, setLoading] = useState<string>("");
    const [projects, setProjects] = useState<Projects[]>([])
+   const [displayInputBox, setDisplayInputBox] = useState<boolean>(false)
 
    useEffect(()=> {
       setLoading("Fetching projects")
@@ -38,27 +40,45 @@ const UserHome = () => {
    }, [])
 
    return (
-      <div>
-         <h1>Welcome UserName...</h1>
+      <div className="flex gap-5">
+         <div>
+            <h1>Welcome UserName...</h1>
       
 
-         {
-            projects.length === 0 && (
-               <>
-                  <p>No projects yet.</p>
-               </>
-            )
-         }
-         <p>Create a project</p>         
-         <Popover>
-            <PopoverTrigger>
-               New Analysis
-            </PopoverTrigger>
-            <PopoverContent>
-               
-            </PopoverContent>
+            {
+               projects.length === 0 && (
+                  <>
+                     <p>No projects yet.</p>
+                  </>
+               )
+            }  
+            <p>Create a project</p>         
+            <Popover>
+               <PopoverTrigger>
+                  New Analysis
+               </PopoverTrigger>
+               <PopoverContent>
+                  <Button>CSV</Button>
+                  <Button onClick={()=>setDisplayInputBox(true)}>Paste feedback</Button>
+               </PopoverContent>
 
-         </Popover>
+            </Popover>
+         </div>
+         
+         <div className=" mt-4">
+            {
+               displayInputBox && (
+                  <>
+                   <Button onClick = {()=>setDisplayInputBox(false)}>X</Button>
+                  <Input className="w-[600px]"/> 
+                  
+                  </>
+                 
+               )
+
+            }
+            
+         </div>
       </div>
    )
 }
