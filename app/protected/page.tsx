@@ -21,7 +21,7 @@ const UserHome = () => {
    const [loading, setLoading] = useState<string>("");
    const [projects, setProjects] = useState<Projects[]>([])
    const [displayInputBox, setDisplayInputBox] = useState<boolean>(false)
-   const [selectedFile, setSelectedFile] = useState<FileList | null> (null)
+   const [selectedFile, setSelectedFile] = useState<File | null> (null)
 
    useEffect(()=> {
       setLoading("Fetching projects")
@@ -40,6 +40,24 @@ const UserHome = () => {
      getUserProjects();
    }, [])
 
+
+   const parseFile = async () => {
+      if(!selectedFile){
+         //By pass this by disabling the button possible 
+         console.log("No file to parse")
+         return
+      }
+
+      if (selectedFile.name.endsWith("csv")){
+         const text = await selectedFile.text()
+         const splitText = text.split("\n")
+         console.log(text)
+      }
+      
+   }
+
+   parseFile()
+    
    return (
       <div className="flex gap-5">
          <div>
@@ -60,7 +78,7 @@ const UserHome = () => {
                </PopoverTrigger>
                <PopoverContent className="">
                   <div>
-                     <Input  className="border-0" type="file" /> <Button>Parse</Button>
+                     <Input onChange={(event:React.ChangeEvent<HTMLInputElement>)=>setSelectedFile(event.target.files)} accept=".csv" className="border-0" type="file" /> <Button>Parse</Button>
                   </div>
                   
                   <Button className="mt-2" onClick={()=>setDisplayInputBox(true)}>Paste feedback</Button>
@@ -72,9 +90,8 @@ const UserHome = () => {
             {
                displayInputBox && (
                   <>
-                   <Button onClick = {()=>setDisplayInputBox(false)}>X</Button>
-                  <Input className="w-[600px]"/> 
-                  
+                     <Button onClick = {()=>setDisplayInputBox(false)}>X</Button>
+                     <Input className="w-[600px]"/> 
                   </>
                  
                )
