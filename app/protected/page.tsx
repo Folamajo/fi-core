@@ -51,9 +51,23 @@ const UserHome = () => {
       if (file.name.endsWith("csv")){
          const text = await file.text()
          const splitText = text.split("\n")
-         const header = splitText[0].split(",").map((item) => item.toLowerCase())
+         const header = splitText[0].split(",").map((item:string) => item.toLowerCase())
         
-         console.log(header)
+         const feedbackArray = []
+         splitText.map((row, index)=> {
+            if(index > 0){
+               const splitRow = row.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/);
+
+               if (splitRow[1]){
+                  const feedback = splitRow[1].replace(/\\"/g, '')
+                  feedbackArray.push(feedback)
+               }
+
+              
+            }
+            
+         })
+         console.log(feedbackArray)
       }
       
    }
