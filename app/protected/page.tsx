@@ -47,16 +47,18 @@ const UserHome = () => {
          console.log("No file to parse")
          return
       }
-
-      if (selectedFile.name.endsWith("csv")){
-         const text = await selectedFile.text()
+      const file = selectedFile[0]
+      if (file.name.endsWith("csv")){
+         const text = await file.text()
          const splitText = text.split("\n")
-         console.log(text)
+         const header = splitText[0].split(",").map((item) => item.toLowerCase())
+        
+         console.log(header)
       }
       
    }
 
-   parseFile()
+   // parseFile()
     
    return (
       <div className="flex gap-5">
@@ -78,7 +80,8 @@ const UserHome = () => {
                </PopoverTrigger>
                <PopoverContent className="">
                   <div>
-                     <Input onChange={(event:React.ChangeEvent<HTMLInputElement>)=>setSelectedFile(event.target.files)} accept=".csv" className="border-0" type="file" /> <Button>Parse</Button>
+                     <Input onChange={(event:React.ChangeEvent<HTMLInputElement>)=>setSelectedFile(event.target.files)} accept=".csv" className="border-0" type="file" /> 
+                     <Button onClick={parseFile}>Parse</Button>
                   </div>
                   
                   <Button className="mt-2" onClick={()=>setDisplayInputBox(true)}>Paste feedback</Button>
