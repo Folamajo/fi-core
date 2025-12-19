@@ -23,6 +23,7 @@ const UserHome = () => {
    const [displayInputBox, setDisplayInputBox] = useState<boolean>(false)
    const [selectedFile, setSelectedFile] = useState<File | null> (null)
    const [preview, setPreview] = useState<Record<string, string> []>([])
+   const [previewMode, setPreviewMode] = useState<boolean>(false)
 
    useEffect(()=> {
       setLoading("Fetching projects")
@@ -77,6 +78,7 @@ const UserHome = () => {
          }
 
          setPreview(normalisedObject)
+         setPreviewMode(true)
       }
       
    }
@@ -124,14 +126,26 @@ const UserHome = () => {
 
             }
             {
-               preview && (
+               previewMode && (
                   <>
-                  <div>
-                     {
-                        preview.map((item) => {
-                           return <div>{item.feedback}</div>
-                        })
-                     }
+                  <div className="w-[800px] flex-col gap-2 ml-4">
+                     <h1 className="font-bold text-lg">Preview mode</h1>
+                     <div className='border flex-col gap-4'>
+                        {
+                           preview.map((item) => {
+                              return (
+
+                                 <div className=' '>{item.feedback}</div>
+
+                              )
+                           })
+                        }
+                     </div>
+                     <div className=' mt-2 flex-col gap-2'>
+                        <Button onClick={()=>setPreviewMode(false)}>Cancel</Button>
+                        <Button>Confirm</Button>
+
+                     </div>
                      
                   </div>
                   </>
