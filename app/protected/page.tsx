@@ -67,7 +67,15 @@ const UserHome = () => {
             }
             
          })
-         console.log(feedbackArray)
+         
+         const normalisedObject = []
+         for (let feedback of feedbackArray){
+            if(feedback){
+               normalisedObject.push({feedback: feedback})
+            }
+         }
+
+         console.log(normalisedObject)
       }
       
    }
