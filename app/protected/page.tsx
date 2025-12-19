@@ -22,6 +22,7 @@ const UserHome = () => {
    const [projects, setProjects] = useState<Projects[]>([])
    const [displayInputBox, setDisplayInputBox] = useState<boolean>(false)
    const [selectedFile, setSelectedFile] = useState<File | null> (null)
+   const [preview, setPreview] = useState<Record<string, string> []>([])
 
    useEffect(()=> {
       setLoading("Fetching projects")
@@ -75,7 +76,7 @@ const UserHome = () => {
             }
          }
 
-         console.log(normalisedObject)
+         setPreview(normalisedObject)
       }
       
    }
@@ -121,6 +122,20 @@ const UserHome = () => {
                  
                )
 
+            }
+            {
+               preview && (
+                  <>
+                  <div>
+                     {
+                        preview.map((item) => {
+                           return <div>{item.feedback}</div>
+                        })
+                     }
+                     
+                  </div>
+                  </>
+               )
             }
             
          </div>
