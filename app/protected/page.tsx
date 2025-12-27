@@ -128,9 +128,9 @@ const UserHome = () => {
             {
                previewMode && (
                   <>
-                  <div className="w-[800px] flex-col gap-2 ml-4">
+                  <div className="w-[800px] flex flex-col gap-2 ml-4">
                      <h1 className="font-bold text-lg">Preview mode</h1>
-                     <div className='border flex-col gap-4'>
+                     <div className='border flex flex-col gap-2'>
                         {
                            preview.map((item) => {
                               return (
@@ -141,7 +141,7 @@ const UserHome = () => {
                            })
                         }
                      </div>
-                     <div className=' mt-2 flex-col gap-2'>
+                     <div className=' mt-2 flex gap-2'>
                         <Button onClick={()=>setPreviewMode(false)}>Cancel</Button>
                         <Button>Confirm</Button>
 
@@ -158,6 +158,9 @@ const UserHome = () => {
 }
 
 export default UserHome
+
+
+
 
 
 
