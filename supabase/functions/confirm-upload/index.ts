@@ -3,14 +3,17 @@
 // This enables autocomplete, go to definition, etc.
 
 // Setup type definitions for built-in Supabase Runtime APIs
-import "jsr:@supabase/functions-js/edge-runtime.d.ts"
+// import "jsr:@supabase/functions-js/edge-runtime.d.ts"
+// import { supabase } from '@/lib/supabaseClient';
+
+import { createClient } from "npm:@supabase/supabase-js@2"
 
 console.log("Hello from Functions!")
 
 Deno.serve(async (req) => {
 
- 
-  if(req.method !== "POST"){
+   //Verifying the request method is a POST request
+   if(req.method !== "POST"){
       return new Response(
          JSON.stringify({message: "Only post requests accepted"}), 
          {
@@ -20,10 +23,41 @@ Deno.serve(async (req) => {
       )
    } 
 
-  return new Response(
+   try {
+      const supabaseClient = createClient(
+         Deno.env.get('SUPABASE_URL') ?? '',
+         Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+         {
+            global : {
+               headers: { Authorization: req.headers.get('Authurization')!}
+            }
+         }
+
+      )
+   }
+   
+   // Getting the JWT token from the authorization header
+   const authHeader = req.headers.get('Authorization');
+   if(!authHeader){
+      return new Response(
+         JSON.stringify({message: "Unauthorised user"}),
+         {
+            status: 401,
+            headers : {
+               "Content-Type": 'application/json'
+            }
+         }
+      )
+   }
+
+   const token = authHeader.replace('Bearer ', '');
+   // const { data } = await supabaseClient.auth.getUser(token)
+
+   
+   return new Response(
     JSON.stringify(data),
     { headers: { "Content-Type": "application/json" } },
-  )
+   )
 })
 
 
