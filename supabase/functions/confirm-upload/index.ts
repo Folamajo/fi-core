@@ -41,7 +41,7 @@ Deno.serve(async (req: Request) => {
       }
 
       //Supabase client is a connection that our code uses to toalk to our Supabase project we use this connection to validate our user
-      const supabaseClientVerification = createClient(
+      const supabaseUserVerification = createClient(
          Deno.env.get('SUPABASE_URL') ?? '',
          Deno.env.get('SUPABASE_ANON_KEY') ?? '',
          {
@@ -55,17 +55,17 @@ Deno.serve(async (req: Request) => {
    // Getting the JWT token from the authorization header
       const token = authHeader.replace('Bearer ', '');
 
-      const { data: { user } } = await supabaseClientVerification.auth.getUser(token);
+      const { data: { user } } = await supabaseUserVerification.auth.getUser(token);
 
       if(!user){
          return new Response('User not authenticated',{
             status: 401
          })
       }
-
-      const supabaseClient = createClient(
+      // Create client that gives us access to 
+      const supabase = createClient(
          Deno.env.get('SUPABASE_URL') ?? '',
-         Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+         Deno.env.get('SUPABASE_SERVER_KEY') ?? '',
          {
             global : {
                headers: { Authorization: req.headers.get('Authorization')!}
@@ -73,7 +73,7 @@ Deno.serve(async (req: Request) => {
          }
       )
 
-
+      // PARSING AND VALIDATING REQUEST BODY 
       const data = await req.json();
       const { feedbackItems } = data;
       if (!feedbackItems){
@@ -96,6 +96,16 @@ Deno.serve(async (req: Request) => {
             }
          )
       }
+
+      // DATABASE WRITE
+      const { error } = await supabase
+         .from('projects')
+         .insert({
+            project_name:"Add random user project name",
+            user_id : user.id
+         })
+
+
       
       return new Response(JSON.stringify({success: true, data: {user_id: user.id}, feedback_count: feedbackItemsArray.length}), {
          headers: { "Content-Type": "application/json"},
