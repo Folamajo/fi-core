@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+
 type Projects = {
    id : string,
    created_at : string,
@@ -82,6 +83,7 @@ const UserHome = () => {
       }
       
    }
+   console.log(preview)
 
    // parseFile()
     
@@ -105,7 +107,7 @@ const UserHome = () => {
                </PopoverTrigger>
                <PopoverContent className="">
                   <div>
-                     <Input onChange={(event:React.ChangeEvent<HTMLInputElement>)=>setSelectedFile(event.target.files)} accept=".csv" className="border-0" type="file" /> 
+                     <Input  onChange={(event:React.ChangeEvent<HTMLInputElement>)=>setSelectedFile(event.target.files)} accept=".csv" className="border-0 hover:cursor-pointer" type="file" /> 
                      <Button onClick={parseFile}>Parse</Button>
                   </div>
                   

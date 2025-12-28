@@ -6,12 +6,11 @@
 // import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 // import { supabase } from '@/lib/supabaseClient';
 
-import { createClient } from "npm:@supabase/supabase-js@2"
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 console.log("Hello from Functions!")
 
-Deno.serve(async (req) => {
-
+Deno.serve(async (req: Request) => {
    //Verifying the request method is a POST request
    if(req.method !== "POST"){
       return new Response(
@@ -23,8 +22,10 @@ Deno.serve(async (req) => {
       )
    } 
 
+
    try {
 
+      //Get the user feedback 
       const authHeader = req.headers.get('Authorization');
 
       if(!authHeader){
@@ -39,7 +40,8 @@ Deno.serve(async (req) => {
          )
       }
 
-      const supabaseClient = createClient(
+      //Supabase client is a connection that our code uses to toalk to our Supabase project we use this connection to validate our user
+      const supabaseClientVerification = createClient(
          Deno.env.get('SUPABASE_URL') ?? '',
          Deno.env.get('SUPABASE_ANON_KEY') ?? '',
          {
@@ -51,34 +53,64 @@ Deno.serve(async (req) => {
    
    
    // Getting the JWT token from the authorization header
-   const token = authHeader.replace('Bearer ', '');
+      const token = authHeader.replace('Bearer ', '');
 
-   const { data:{ user } } = await supabaseClient.auth.getUser(token);
+      const { data: { user } } = await supabaseClientVerification.auth.getUser(token);
 
-   if(!user){
-      return new Response('User not authenticated',{
-         status: 401
+      if(!user){
+         return new Response('User not authenticated',{
+            status: 401
+         })
+      }
+
+      const supabaseClient = createClient(
+         Deno.env.get('SUPABASE_URL') ?? '',
+         Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+         {
+            global : {
+               headers: { Authorization: req.headers.get('Authorization')!}
+            }
+         }
+      )
+
+
+      const data = await req.json();
+      const { feedbackItems } = data;
+      if (!feedbackItems){
+         return new Response(
+            JSON.stringify({message: 'No feedback items'}),
+            {
+               headers: {"Content-Type": "Application/json"},
+               status: 400 
+            }
+         )
+      }
+      const feedbackItemsArray = feedbackItems.map(item => item.feedback)
+
+      if (feedbackItemsArray.length === 0 ){
+         return new Response(
+            JSON.stringify({message: 'No items imported'}), 
+            {
+               headers: {"Content-Type": "Application/json"},
+               status: 400
+            }
+         )
+      }
+      
+      return new Response(JSON.stringify({success: true, data: {user_id: user.id}, feedback_count: feedbackItemsArray.length}), {
+         headers: { "Content-Type": "application/json"},
+         status:200
       })
+
+   }  catch (error) {
+      return new Response (
+         JSON.stringify({error: error.message}),
+         { 
+            headers: { "Content-Type": "application/json" },
+            status: 400,
+         },
+      )
    }
-
-
-
-
-   return new Response(JSON.stringify({success: true, data: {user_id: user.id}}), {
-      headers: { "Content-Type": "application/json"},
-      status:200
-   })
-
-} catch (error) {
-   return new Response (
-      JSON.stringify({error: error.message}),{ 
-         headers: { "Content-Type": "application/json" },
-         status: 400,
-      },
-   )
-}
-   
-   
 })
 
 
