@@ -24,40 +24,61 @@ Deno.serve(async (req) => {
    } 
 
    try {
+
+      const authHeader = req.headers.get('Authorization');
+
+      if(!authHeader){
+         return new Response(
+            JSON.stringify({message: "Unauthorised user"}),
+            {
+               status: 401,
+               headers : {
+                  "Content-Type": 'application/json'
+               }
+            }
+         )
+      }
+
       const supabaseClient = createClient(
          Deno.env.get('SUPABASE_URL') ?? '',
          Deno.env.get('SUPABASE_ANON_KEY') ?? '',
          {
             global : {
-               headers: { Authorization: req.headers.get('Authurization')!}
+               headers: { Authorization: req.headers.get('Authorization')!}
             }
          }
-
       )
-   }
+   
    
    // Getting the JWT token from the authorization header
-   const authHeader = req.headers.get('Authorization');
-   if(!authHeader){
-      return new Response(
-         JSON.stringify({message: "Unauthorised user"}),
-         {
-            status: 401,
-            headers : {
-               "Content-Type": 'application/json'
-            }
-         }
-      )
+   const token = authHeader.replace('Bearer ', '');
+
+   const { data:{ user } } = await supabaseClient.auth.getUser(token);
+
+   if(!user){
+      return new Response('User not authenticated',{
+         status: 401
+      })
    }
 
-   const token = authHeader.replace('Bearer ', '');
-   // const { data } = await supabaseClient.auth.getUser(token)
 
-   
-   return new Response(
-    JSON.stringify(data),
-    { headers: { "Content-Type": "application/json" } },
+
+
+   return new Response(JSON.stringify({success: true, data: {user_id: user.id}}), {
+      headers: { "Content-Type": "application/json"},
+      status:200
+   })
+
+} catch (error) {
+   return new Response (
+      JSON.stringify({error: error.message}),{ 
+         headers: { "Content-Type": "application/json" },
+         status: 400,
+      },
    )
+}
+   
+   
 })
 
 
