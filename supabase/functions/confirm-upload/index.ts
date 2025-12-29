@@ -74,8 +74,8 @@ Deno.serve(async (req: Request) => {
       )
 
       // PARSING AND VALIDATING REQUEST BODY 
-      const data = await req.json();
-      const { feedbackItems } = data;
+      const feedbackData = await req.json();
+      const { feedbackItems } = feedbackData;
       if (!feedbackItems){
          return new Response(
             JSON.stringify({message: 'No feedback items'}),
@@ -98,13 +98,12 @@ Deno.serve(async (req: Request) => {
       }
 
       // DATABASE WRITE
-      const { error } = await supabase
+      const { data, error } = await supabase
          .from('projects')
-         .insert({
-            project_name:"Add random user project name",
-            user_id : user.id
-         })
+         .insert({ project_name:"Add random user project name", user_id : user.id })
+         .select()
 
+         // we will use data[0].id to set the anlalysis tabn
 
       
       return new Response(JSON.stringify({success: true, data: {user_id: user.id}, feedback_count: feedbackItemsArray.length}), {
