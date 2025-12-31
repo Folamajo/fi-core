@@ -21,13 +21,9 @@ Deno.serve(async (req: Request) => {
          }
       )
    } 
-
-
    try {
-
       //Get the user feedback 
       const authHeader = req.headers.get('Authorization');
-
       if(!authHeader){
          return new Response(
             JSON.stringify({message: "Unauthorised user"}),

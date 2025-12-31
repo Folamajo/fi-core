@@ -26,6 +26,7 @@ const UserHome = () => {
    const [preview, setPreview] = useState<Record<string, string> []>([])
    const [previewMode, setPreviewMode] = useState<boolean>(false)
 
+
    useEffect(()=> {
       setLoading("Fetching projects")
       async function getUserProjects(){
@@ -44,46 +45,74 @@ const UserHome = () => {
    }, [])
 
 
-   const parseFile = async () => {
+   type ParserResult = {
+      status: "success" | "error",
+      message: string
+   }
+
+   const parseFile = async (): Promise<ParserResult> => {
       if(!selectedFile){
          //By pass this by disabling the button possible 
+         //Drop error message too 
          console.log("No file to parse")
-         return
+         return { status : "error", message: "No file selected"}
       }
-      const file = selectedFile[0]
+
+
+      console.log(selectedFile)
+
+      const file = selectedFile
       if (file.name.endsWith("csv")){
          const text = await file.text()
          const splitText = text.split("\n")
-         const header = splitText[0].split(",").map((item:string) => item.toLowerCase())
-        
-         const feedbackArray = []
-         splitText.map((row, index)=> {
-            if(index > 0){
-               const splitRow = row.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/);
+         const header = splitText[0].split(",").map((item:string) => item.toLowerCase());
+         const feedbackArray: string[] = [];
 
-               if (splitRow[1]){
-                  const feedback = splitRow[1].replace(/\\"/g, '')
-                  feedbackArray.push(feedback)
+         if (splitText.length > 0){
+            splitText.map((row, index)=> {
+               if(index > 0){
+                  const splitRow = row.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/);
+
+                  if (splitRow[1]){
+                     const feedback = splitRow[1].replace(/\\"/g, '')
+                     feedbackArray.push(feedback)
+                  }
                }
-
-              
+            })
+         
+            const normalisedObject = []
+            for (let feedback of feedbackArray){
+               if(feedback){
+                  normalisedObject.push({feedback: feedback})
+               }
+            }
+            if(normalisedObject.length > 0 ){
+               setPreview(normalisedObject)
+               setPreviewMode(true)
             }
             
-         })
-         
-         const normalisedObject = []
-         for (let feedback of feedbackArray){
-            if(feedback){
-               normalisedObject.push({feedback: feedback})
-            }
+            return {status: "success", message: "File successfully parsed, ready for analysis"};
          }
-
-         setPreview(normalisedObject)
-         setPreviewMode(true)
+         
       }
-      
+      return {status: "error", message: "No data found in imported file"}
    }
-   console.log(preview)
+
+
+   const confirmAnalysis = async() => {
+      //function calls backend 
+
+      const canConfirm = preview.length > 0 && previewMode 
+
+      if (canConfirm){
+         //Call our edge function with the preview with await
+         return {}
+      }
+      return { }
+   }
+   // Call function so that if the preview is true we know that that there is some value 
+   // then we can call
+   // console.log(preview)
 
    // parseFile()
     
@@ -107,7 +136,7 @@ const UserHome = () => {
                </PopoverTrigger>
                <PopoverContent className="">
                   <div>
-                     <Input  onChange={(event:React.ChangeEvent<HTMLInputElement>)=>setSelectedFile(event.target.files)} accept=".csv" className="border-0 hover:cursor-pointer" type="file" /> 
+                     <Input  onChange={(event:React.ChangeEvent<HTMLInputElement>)=>setSelectedFile(event.target.files?.[0] ?? null)} accept=".csv" className="border-0 hover:cursor-pointer" type="file" /> 
                      <Button onClick={parseFile}>Parse</Button>
                   </div>
                   
@@ -144,8 +173,8 @@ const UserHome = () => {
                         }
                      </div>
                      <div className=' mt-2 flex gap-2'>
-                        <Button onClick={()=>setPreviewMode(false)}>Cancel</Button>
-                        <Button>Confirm</Button>
+                        <Button  onClick={()=>setPreviewMode(false)}>Cancel</Button>
+                        <Button >Confirm</Button>
 
                      </div>
                      
