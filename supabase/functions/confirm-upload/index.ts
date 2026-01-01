@@ -9,15 +9,28 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 console.log("Hello from Functions!")
-
+const corsHeaders = {
+   "Access-Control-Allow-Origin" : "localhost:3000",
+   "Access-Control-Allow-Methods" : "POST, OPTIONS",
+   "Access-COntrol-Allow-Headers" : "Authorization, Content-Type"
+}
 Deno.serve(async (req: Request) => {
    //Verifying the request method is a POST request
+   if(req.method ==="OPTIONS"){
+      return new Response(null, {
+         status:204,
+         headers: corsHeaders
+      })
+   }
    if(req.method !== "POST"){
       return new Response(
          JSON.stringify({message: "Only post requests accepted"}), 
          {
             status: 405,
-            headers: {"Content-Type": "application/json"}
+            headers: {
+               ...corsHeaders, 
+               "Content-Type": "application/json"
+            }
          }
       )
    } 
@@ -104,6 +117,9 @@ Deno.serve(async (req: Request) => {
             feedback_items:  feedbackItemsArray
          }
       )
+      if (error){
+         console.log(error)
+      }
 
          // we will use da+
          // ta[0].id to set the anlalysis tabn
