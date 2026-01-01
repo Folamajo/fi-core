@@ -48,7 +48,7 @@ Deno.serve(async (req: Request) => {
       )
    
    
-   // Getting the JWT token from the authorization header
+      // Getting the JWT token from the authorization header
       const token = authHeader.replace('Bearer ', '');
 
       const { data: { user } } = await supabaseUserVerification.auth.getUser(token);
@@ -94,12 +94,19 @@ Deno.serve(async (req: Request) => {
       }
 
       // DATABASE WRITE
-      const { data, error } = await supabase
-         .from('projects')
-         .insert({ project_name:"Add random user project name", user_id : user.id })
-         .select()
+      // const { data, error } = await supabase
+      //    .from('projects')
+      //    .insert({ project_name:"Add random user project name", user_id : user.id })
+      //    .select()
+      const {data, error} = await supabase.rpc('create_project', 
+         { 
+            project_name: 'project-',
+            feedback_items:  feedbackItemsArray
+         }
+      )
 
-         // we will use data[0].id to set the anlalysis tabn
+         // we will use da+
+         // ta[0].id to set the anlalysis tabn
 
       
       return new Response(JSON.stringify({success: true, data: {user_id: user.id}, feedback_count: feedbackItemsArray.length}), {

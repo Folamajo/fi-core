@@ -106,6 +106,18 @@ const UserHome = () => {
 
       if (canConfirm){
          //Call our edge function with the preview with await
+         const {data, error } = await supabase.functions.invoke('', {
+            headers: {
+               "Content-Type" : "application/json",
+               'Authorization' : `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+            },
+            body : JSON.stringify({ feedbackItems : preview }),
+            method: 'POST'
+         })
+
+         if(error){
+            console.log(error)
+         }
          return {}
       }
       return { }
@@ -174,8 +186,7 @@ const UserHome = () => {
                      </div>
                      <div className=' mt-2 flex gap-2'>
                         <Button  onClick={()=>setPreviewMode(false)}>Cancel</Button>
-                        <Button >Confirm</Button>
-
+                        <Button onClick={confirmAnalysis}>Confirm</Button>
                      </div>
                      
                   </div>
