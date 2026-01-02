@@ -12,7 +12,7 @@ console.log("Hello from Functions!")
 const corsHeaders = {
    "Access-Control-Allow-Origin" : "http://localhost:3000",
    "Access-Control-Allow-Methods" : "POST, OPTIONS",
-   "Access-Control-Allow-Headers" : "Authorization, Content-Type"
+   "Access-Control-Allow-Headers" : "*"
 }
 Deno.serve(async (req: Request) => {
    //Verifying the request method is a POST request
@@ -36,7 +36,7 @@ Deno.serve(async (req: Request) => {
    } 
    try {
       //Get the user feedback 
-      const authHeader = req.headers.get('Authorization');
+      const authHeader = req.headers.get('authorization');
       if(!authHeader){
          return new Response(
             JSON.stringify({message: "Unauthorised user"}),
@@ -56,7 +56,7 @@ Deno.serve(async (req: Request) => {
          Deno.env.get('SUPABASE_ANON_KEY') ?? '',
          {
             global : {
-               headers: { Authorization: req.headers.get('Authorization')!}
+               headers: { Authorization: authHeader}
             }
          }
       )
@@ -81,7 +81,7 @@ Deno.serve(async (req: Request) => {
          Deno.env.get('SUPABASE_SERVER_KEY') ?? '',
          {
             global : {
-               headers: { Authorization: req.headers.get('Authorization')!}
+               headers: { Authorization: authHeader}
             }
          }
       )

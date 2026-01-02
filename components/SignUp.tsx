@@ -30,7 +30,7 @@ const SignUpForm = () => {
        <div>
          <Card className="w-[25em] mx-auto ">
             <CardHeader>
-               <CardTitle className="text-2xl">Login</CardTitle>
+               <CardTitle className="text-2xl">SignUp</CardTitle>
 
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
