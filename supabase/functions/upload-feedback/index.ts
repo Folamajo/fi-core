@@ -10,9 +10,9 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
 console.log("Hello from Functions!")
 const corsHeaders = {
-   "Access-Control-Allow-Origin" : "localhost:3000",
+   "Access-Control-Allow-Origin" : "http://localhost:3000",
    "Access-Control-Allow-Methods" : "POST, OPTIONS",
-   "Access-COntrol-Allow-Headers" : "Authorization, Content-Type"
+   "Access-Control-Allow-Headers" : "Authorization, Content-Type"
 }
 Deno.serve(async (req: Request) => {
    //Verifying the request method is a POST request
@@ -43,6 +43,7 @@ Deno.serve(async (req: Request) => {
             {
                status: 401,
                headers : {
+                  ...corsHeaders,
                   "Content-Type": 'application/json'
                }
             }
@@ -68,6 +69,9 @@ Deno.serve(async (req: Request) => {
 
       if(!user){
          return new Response('User not authenticated',{
+            headers: {
+               ...corsHeaders
+            },
             status: 401
          })
       }
@@ -89,7 +93,9 @@ Deno.serve(async (req: Request) => {
          return new Response(
             JSON.stringify({message: 'No feedback items'}),
             {
-               headers: {"Content-Type": "Application/json"},
+               headers: {
+                  ...corsHeaders,
+                  "Content-Type": "Application/json"},
                status: 400 
             }
          )
@@ -100,7 +106,9 @@ Deno.serve(async (req: Request) => {
          return new Response(
             JSON.stringify({message: 'No items imported'}), 
             {
-               headers: {"Content-Type": "Application/json"},
+               headers: {
+                  ...corsHeaders,
+                  "Content-Type": "Application/json"},
                status: 400
             }
          )
@@ -126,7 +134,10 @@ Deno.serve(async (req: Request) => {
 
       
       return new Response(JSON.stringify({success: true, data: {user_id: user.id}, feedback_count: feedbackItemsArray.length}), {
-         headers: { "Content-Type": "application/json"},
+         headers: { 
+            ...corsHeaders,
+            "Content-Type": "application/json"
+         },
          status:200
       })
 
@@ -134,7 +145,9 @@ Deno.serve(async (req: Request) => {
       return new Response (
          JSON.stringify({error: error.message}),
          { 
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+               ...corsHeaders,
+               "Content-Type": "application/json" },
             status: 400,
          },
       )
