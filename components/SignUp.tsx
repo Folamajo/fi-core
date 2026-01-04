@@ -27,11 +27,10 @@ const SignUpForm = () => {
 
    return (
     
-       <div>
+      <div>
          <Card className="w-[25em] mx-auto ">
             <CardHeader>
                <CardTitle className="text-2xl">SignUp</CardTitle>
-
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
                <Input value = {email} type = "email" placeholder='Email' onChange={(event:React.ChangeEvent<HTMLInputElement>)=>setEmail(event.target.value)}/>
@@ -39,8 +38,6 @@ const SignUpForm = () => {
                <Button onClick={handleSignUp}>Signup</Button>
             </CardContent>
          </Card>
-        
-         
       </div>
    )
 }

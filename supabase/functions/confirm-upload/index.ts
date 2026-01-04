@@ -8,12 +8,13 @@
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 
-console.log("Hello from Functions!")
+// console.log("Hello from Functions!")
 const corsHeaders = {
    "Access-Control-Allow-Origin" : "http://localhost:3000",
    "Access-Control-Allow-Methods" : "POST, OPTIONS",
    "Access-Control-Allow-Headers" : "*"
 }
+
 Deno.serve(async (req: Request) => {
    //Verifying the request method is a POST request
    if(req.method ==="OPTIONS"){
@@ -52,11 +53,14 @@ Deno.serve(async (req: Request) => {
 
       //Supabase client is a connection that our code uses to toalk to our Supabase project we use this connection to validate our user
       const supabaseUserVerification = createClient(
-         Deno.env.get('SUPABASE_URL') ?? '',
-         Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+         Deno.env.get('PROJECT_URL') ?? '',
+         Deno.env.get('ANON_KEY') ?? '',
          {
             global : {
-               headers: { Authorization: authHeader}
+               headers: { 
+                  ...corsHeaders
+                  Authorization: authHeader
+               }
             }
          }
       )
@@ -77,14 +81,18 @@ Deno.serve(async (req: Request) => {
       }
       // Create client that gives us access to 
       const supabase = createClient(
-         Deno.env.get('SUPABASE_URL') ?? '',
-         Deno.env.get('SUPABASE_SERVER_KEY') ?? '',
+         
+         Deno.env.get('PROJECT_URL') ?? '',
+         Deno.env.get('SERVER_KEY') ?? '',
          {
             global : {
+               ...corsHeaders
                headers: { Authorization: authHeader}
             }
          }
       )
+
+      console.log(Deno.env.get('PROJECT_URL'))
 
       // PARSING AND VALIDATING REQUEST BODY 
       const feedbackData = await req.json();
@@ -129,9 +137,6 @@ Deno.serve(async (req: Request) => {
          console.log(error)
       }
 
-         // we will use da+
-         // ta[0].id to set the anlalysis tabn
-
       
       return new Response(JSON.stringify({success: true, data: {user_id: user.id}, feedback_count: feedbackItemsArray.length}), {
          headers: { 
@@ -155,7 +160,11 @@ Deno.serve(async (req: Request) => {
 })
 
 
-   // const { name } = await req.json()   
+
+
+
+
+// const { name } = await req.json()   
 //   const data = {
 //     message: `Hello ${name}!`,
 //   }
