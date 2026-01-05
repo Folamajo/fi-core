@@ -107,10 +107,10 @@ const UserHome = () => {
       if (canConfirm){
          //Call our edge function with the preview with await
          const {data, error } = await supabase.functions.invoke('confirm-upload', {
-            headers: {
-               "Content-Type" : "application/json",
-               'Authorization' : `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
-            },
+            // headers: {
+            //    "Content-Type" : "application/json",
+            //    'Authorization' : `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+            // },
             body : JSON.stringify({ feedbackItems : preview }),
             method: 'POST'
          })

@@ -16,7 +16,7 @@ const corsHeaders = {
 }
 
 Deno.serve(async (req: Request) => {
-   //Verifying the request method is a POST request
+
    if(req.method ==="OPTIONS"){
       return new Response(null, {
          status:204,
@@ -57,18 +57,16 @@ Deno.serve(async (req: Request) => {
          Deno.env.get('ANON_KEY') ?? '',
          {
             global : {
-               headers: { 
-                  ...corsHeaders
-                  Authorization: authHeader
-               }
+               headers: { Authorization: req.headers.get('Authorization') }
             }
          }
       )
-   
+      console.log(authHeader)
    
       // Getting the JWT token from the authorization header
+      
       const token = authHeader.replace('Bearer ', '');
-
+      console.log(token)
       const { data: { user } } = await supabaseUserVerification.auth.getUser(token);
 
       if(!user){
@@ -86,7 +84,7 @@ Deno.serve(async (req: Request) => {
          Deno.env.get('SERVER_KEY') ?? '',
          {
             global : {
-               ...corsHeaders
+               
                headers: { Authorization: authHeader}
             }
          }
@@ -122,11 +120,6 @@ Deno.serve(async (req: Request) => {
          )
       }
 
-      // DATABASE WRITE
-      // const { data, error } = await supabase
-      //    .from('projects')
-      //    .insert({ project_name:"Add random user project name", user_id : user.id })
-      //    .select()
       const {data, error} = await supabase.rpc('create_project', 
          { 
             project_name: 'project-',
@@ -182,3 +175,9 @@ Deno.serve(async (req: Request) => {
     --data '{"name":"Functions"}'
 
 */
+
+      // DATABASE WRITE
+      // const { data, error } = await supabase
+      //    .from('projects')
+      //    .insert({ project_name:"Add random user project name", user_id : user.id })
+      //    .select()
