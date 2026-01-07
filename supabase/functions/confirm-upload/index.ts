@@ -50,16 +50,18 @@ Deno.serve(async (req: Request) => {
             }
          )
       }
+      console.log( Deno.env.get('PROJECT_URL'))
+      console.log( Deno.env.get('ANON_KEY'))
 
-      //Supabase client is a connection that our code uses to toalk to our Supabase project we use this connection to validate our user
+      //Supabase client is a connection that our code uses to talk to our Supabase project we use this connection to validate our user
       const supabaseUserVerification = createClient(
          Deno.env.get('PROJECT_URL') ?? '',
          Deno.env.get('ANON_KEY') ?? '',
-         {
-            global : {
-               headers: { Authorization: req.headers.get('Authorization') }
-            }
-         }
+         // {
+         //    global : {
+         //       headers: { Authorization: authHeader }
+         //    }
+         // }
       )
       console.log(authHeader)
    
@@ -80,8 +82,10 @@ Deno.serve(async (req: Request) => {
       // Create client that gives us access to 
       const supabase = createClient(
          
+         // Deno.env.get('SUPABASE_URL') ?? '',
+         // Deno.env.get('SUPABASE_ANON_KEY') ?? '',
          Deno.env.get('PROJECT_URL') ?? '',
-         Deno.env.get('SERVER_KEY') ?? '',
+         Deno.env.get('ANON_KEY') ?? '',
          {
             global : {
                
@@ -90,7 +94,7 @@ Deno.serve(async (req: Request) => {
          }
       )
 
-      console.log(Deno.env.get('PROJECT_URL'))
+      // console.log(Deno.env.get('PROJECT_URL'))
 
       // PARSING AND VALIDATING REQUEST BODY 
       const feedbackData = await req.json();
@@ -151,6 +155,12 @@ Deno.serve(async (req: Request) => {
       )
    }
 })
+
+
+
+
+
+
 
 
 

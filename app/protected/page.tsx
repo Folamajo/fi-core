@@ -16,8 +16,7 @@ type Projects = {
 
 const UserHome = () => {
    
-
-
+   
 
    const [loading, setLoading] = useState<string>("");
    const [projects, setProjects] = useState<Projects[]>([])
@@ -100,17 +99,16 @@ const UserHome = () => {
 
 
    const confirmAnalysis = async() => {
-      //function calls backend 
+      const session = (await supabase.auth.getSession()).data.session
+      console.log(session)
 
       const canConfirm = preview.length > 0 && previewMode 
-
       if (canConfirm){
-         //Call our edge function with the preview with await
          const {data, error } = await supabase.functions.invoke('confirm-upload', {
-            // headers: {
-            //    "Content-Type" : "application/json",
-            //    'Authorization' : `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
-            // },
+            headers: {
+               "Content-Type" : "application/json",
+               'Authorization' : `Bearer ${session?.access_token}`
+            },
             body : JSON.stringify({ feedbackItems : preview }),
             method: 'POST'
          })
@@ -122,11 +120,7 @@ const UserHome = () => {
       }
       return { }
    }
-   // Call function so that if the preview is true we know that that there is some value 
-   // then we can call
-   // console.log(preview)
 
-   // parseFile()
     
    return (
       <div className="flex gap-5">
@@ -248,3 +242,8 @@ export default UserHome
 //     </div>
 //   );
 // }
+   // Call function so that if the preview is true we know that that there is some value 
+   // then we can call
+   // console.log(preview)
+
+   // parseFile()
