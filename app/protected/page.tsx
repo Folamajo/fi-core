@@ -150,7 +150,8 @@ const UserHome = () => {
                </PopoverContent>
             </Popover>
          </div>
-         
+
+         {/* Fix RPC FUNCTION        */}
          <div className=" mt-4">
             {
                displayInputBox && (
