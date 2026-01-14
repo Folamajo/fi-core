@@ -134,14 +134,7 @@ Deno.serve(async (req: Request) => {
          console.log(error)
       }
 
-      //Create a function that takes in the analysis id 
-      const triggerAnalysis = (analysis_id:string) => {
-         //Can you write the line that creates a Supabase client using the incoming request’s 
-         // Authorization header so the JWT is automatically validated?
-         
-
-
-      }
+   
       
       return new Response(JSON.stringify({success: true, data: {user_id: user.id}, feedback_count: feedbackItemsArray.length}), {
          headers: { 

@@ -8,16 +8,24 @@
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 
-console.log("Hello from Functions!")
+// console.log("Hello from Functions!")
 
 Deno.serve(async (req) => {
-  const { name } = await req.json()
-  const data = {
-    message: `Hello ${name}!`,
+  const { analysis_id } = await req.json();
+
+  if (!analysis_id){
+      return new Response (
+         JSON.stringify({ message: "No analysis found"}),
+         {
+            status: 400
+         }
+         
+      )
   }
+  
 
   return new Response(
-    JSON.stringify(data),
+    JSON.stringify(analysis_id),
     { headers: { "Content-Type": "application/json" } },
   )
 })
