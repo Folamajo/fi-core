@@ -52,8 +52,6 @@ Deno.serve(async (req: Request) => {
             }
          )
       }
-      console.log( Deno.env.get('PROJECT_URL'))
-      console.log( Deno.env.get('ANON_KEY'))
 
       //Supabase client is a connection that our code uses to talk to our Supabase project we use this connection to validate our user
       const supabaseUserVerification = createClient(
@@ -70,7 +68,6 @@ Deno.serve(async (req: Request) => {
       // Getting the JWT token from the authorization header
       
       const token = authHeader.replace('Bearer ', '');
-      console.log(token)
       const { data: { user } } = await supabaseUserVerification.auth.getUser(token);
 
       if(!user){
@@ -81,7 +78,8 @@ Deno.serve(async (req: Request) => {
             status: 401
          })
       }
-      // Create client that gives us access to 
+
+      // Create client that gives us access to DATABASE LEVEL OPERATIONS
       const supabase = createClient(
          
          // Deno.env.get('SUPABASE_URL') ?? '',

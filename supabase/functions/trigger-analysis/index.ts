@@ -6,33 +6,60 @@
 
 
 
-import "jsr:@supabase/functions-js/edge-runtime.d.ts"
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from 'npm:@supabase/supabase-js@2';
+
 
 
 
 Deno.serve(async (req) => {
-  const { analysis_id } = await req.json();
-  if (!analysis_id){
+   const { analysis_id } = await req.json();
+   if (!analysis_id){
       return new Response (
          JSON.stringify({ message: "missing analysis_id "}),
          {
             status: 400,
          }
       )
-  }
+   }
 
-  // Check for valid authenticated user
-  const authHeader = req.headers.get('Authorization');
-  if(!authHeader){
+  // Check for valid authorization in header 
+   const authHeader = req.headers.get('Authorization');
+   if(!authHeader){
    return new Response(
       JSON.stringify({message: "No authorization token in request header."}),
       {
          status : 401,
       }
    )
-  }
+   }
+   
+   // Get JWT token
+   const jwt = authHeader.replace("Bearer ", "")
 
+   //Create client and verify user 
+   const supabaseVerification = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      {
+         global : {
+            headers: { Authorization: authHeader }
+         }
+      }
+   )
 
+   
+   const { data } = await supabaseVerification.auth.getUser(jwt)
+   if(!data.user){
+      return new Response(
+         JSON.stringify({message: "User could not be found"}),
+         {
+            status: 404,
+         }
+      )
+   }
+
+   const userId = data.user.id;
 })
 
 
@@ -42,10 +69,10 @@ Deno.serve(async (req) => {
   
   //GET USER 
 
-  return new Response(
-    JSON.stringify(analysis_id),
-    { headers: { "Content-Type": "application/json" } },
-  )
+//   return new Response(
+//     JSON.stringify(analysis_id),
+//     { headers: { "Content-Type": "application/json" } },
+//   )
 
 
 
