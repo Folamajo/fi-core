@@ -16,12 +16,21 @@ Deno.serve(async (req) => {
       return new Response (
          JSON.stringify({ message: "missing analysis_id "}),
          {
-            status: 400
+            status: 400,
          }
       )
   }
 
-  
+  // Check for valid authenticated user
+  const authHeader = req.headers.get('Authorization');
+  if(!authHeader){
+   return new Response(
+      JSON.stringify({message: "No authorization token in request header."}),
+      {
+         status : 401,
+      }
+   )
+  }
 
 
 })
