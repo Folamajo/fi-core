@@ -145,6 +145,11 @@ Deno.serve(async (req) => {
          )
       }
    }
+
+   const feedbackItems = await supabase
+      .from("feedback_items")
+      .select('id, feedback_text, created_at' )
+      .eq('analysis_id', analysisId)
 })
 
 
