@@ -35,8 +35,10 @@ Deno.serve(async (req: Request) => {
          }
       )
    } 
+
+
    try {
-      //Get the user feedback 
+      //Get the user details 
       const authHeader = req.headers.get('authorization');
       if(!authHeader){
          return new Response(

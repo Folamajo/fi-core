@@ -8,34 +8,41 @@
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 
-// console.log("Hello from Functions!")
+
 
 Deno.serve(async (req) => {
   const { analysis_id } = await req.json();
-
   if (!analysis_id){
       return new Response (
-         JSON.stringify({ message: "No analysis found"}),
+         JSON.stringify({ message: "missing analysis_id "}),
          {
             status: 400
          }
-         
       )
   }
+
   
 
-  return new Response(
-    JSON.stringify(analysis_id),
-    { headers: { "Content-Type": "application/json" } },
-  )
+
 })
 
 
 
 
 
+  
+  //GET USER 
+
+  return new Response(
+    JSON.stringify(analysis_id),
+    { headers: { "Content-Type": "application/json" } },
+  )
 
 
+
+
+
+// console.log("Hello from Functions!")
 /* To invoke locally:
 
   1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
