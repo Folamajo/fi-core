@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
    const jwt = authHeader.replace("Bearer ", "")
 
    //Create client and verify user 
-   const supabaseVerification = createClient(
+   const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       {
@@ -49,8 +49,8 @@ Deno.serve(async (req) => {
    )
 
    
-   const { data } = await supabaseVerification.auth.getUser(jwt)
-   if(!data.user){
+   const { data : { user } } = await supabase.auth.getUser(jwt)
+   if(!user){
       return new Response(
          JSON.stringify({message: "User could not be found"}),
          {
@@ -58,8 +58,34 @@ Deno.serve(async (req) => {
          }
       )
    }
+   const userId = user.id;
 
-   const userId = data.user.id;
+   // Check if analysis exists 
+   const { count, error} = await supabase 
+      .from('analyses')
+      .select ('id, projects(id, user_id)', {  count: 'exact', head: true})
+      .eq('projects.user_id', userId)
+      .eq('id', analysis_id);
+
+   if (error){
+      return new Response(
+         JSON.stringify({message: "Analysis does not exist for this user"}),
+         {
+            status: 404
+         }
+      )
+   }
+
+   if (count === 0){
+      return new Response(
+         JSON.stringify({message: "The user has no project with this anaylsis id"}),
+         {
+            status : 404,
+         }
+      )
+   }
+
+
 })
 
 
@@ -67,7 +93,9 @@ Deno.serve(async (req) => {
 
 
   
-  //GET USER 
+
+
+//GET USER 
 
 //   return new Response(
 //     JSON.stringify(analysis_id),
