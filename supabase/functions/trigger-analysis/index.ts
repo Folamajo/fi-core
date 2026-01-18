@@ -126,10 +126,25 @@ Deno.serve(async (req) => {
    }
 
    //Get feedback count
-   const feedbackItems = await supabase
+   const feedbackCountResult = await supabase
       .from("feedback_items")
       .select('id', { count: 'exact', head: true })
       .eq('analysis_id', analysisId)
+
+   if(feedbackCountResult.count === 0 ){
+      const { error } = await supabase
+         .from('analyses')
+         .update({ status : 'terminal'})
+         .eq('id', analysisId);
+      if (error){
+         return new Response(
+            JSON.stringify({message: "Error processing analysis."}),
+            {
+               status : 404
+            }
+         )
+      }
+   }
 })
 
 
