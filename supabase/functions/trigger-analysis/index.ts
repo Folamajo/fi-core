@@ -13,8 +13,8 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 
 
 Deno.serve(async (req) => {
-   const { analysis_id } = await req.json();
-   if (!analysis_id){
+   const { analysisId } = await req.json();
+   if (!analysisId){
       return new Response (
          JSON.stringify({ message: "missing analysis_id "}),
          {
@@ -65,7 +65,7 @@ Deno.serve(async (req) => {
       .from('analyses')
       .select ('id, projects(id, user_id)', {  count: 'exact', head: true})
       .eq('projects.user_id', userId)
-      .eq('id', analysis_id);
+      .eq('id', analysisId);
 
    if (error){
       return new Response(
@@ -88,7 +88,7 @@ Deno.serve(async (req) => {
    const currentStatus = await supabase
       .from("analyses")
       .select('status')
-      .eq('id', analysis_id)
+      .eq('id', analysisId)
       .single()
 
    //If there is an error fail fast
@@ -105,7 +105,7 @@ Deno.serve(async (req) => {
       const { error } = await supabase
          .from('analyses')
          .update({ status : 'processing'})
-         .eq('id', analysis_id);
+         .eq('id', analysisId);
 
       if (error){
          return new Response(
@@ -124,6 +124,12 @@ Deno.serve(async (req) => {
          }
       )
    }
+
+   //Get feedback count
+   const feedbackItems = await supabase
+      .from("feedback_items")
+      .select('id', { count: 'exact', head: true })
+      .eq('analysis_id', analysisId)
 })
 
 
