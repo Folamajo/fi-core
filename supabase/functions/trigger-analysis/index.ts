@@ -78,14 +78,52 @@ Deno.serve(async (req) => {
 
    if (count === 0){
       return new Response(
-         JSON.stringify({message: "The user has no project with this anaylsis id"}),
+         JSON.stringify({message: "The user has no project with this analysis id"}),
          {
             status : 404,
          }
       )
    }
+   // Query the database to get the status of the analysis 
+   const currentStatus = await supabase
+      .from("analyses")
+      .select('status')
+      .eq('id', analysis_id)
+      .single()
 
+   //If there is an error fail fast
+   if (currentStatus.error){
+      return new Response(
+         JSON.stringify({message: "Analysis does not exist."}),
+         {
+            status : 404
+         }
+      )
+   }
+   // the status is on 'pending'
+   if (currentStatus.data.status === 'pending'){
+      const { error } = await supabase
+         .from('analyses')
+         .update({ status : 'processing'})
+         .eq('id', analysis_id);
 
+      if (error){
+         return new Response(
+            JSON.stringify({message: "Error processing analysis."}),
+            {
+               status : 404
+            }
+         )
+      }
+   }
+   else if (currentStatus.data.status !== 'pending'){
+      return new Response(
+         JSON.stringify({message: "Analysis is not ready for available for processing."}),
+         {
+            status: 404
+         }
+      )
+   }
 })
 
 
