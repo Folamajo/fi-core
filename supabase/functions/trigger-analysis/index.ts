@@ -125,6 +125,7 @@ Deno.serve(async (req) => {
       )
    }
 
+   const maxCount = 200;
    //Get feedback count
    const feedbackCountResult = await supabase
       .from("feedback_items")
@@ -145,6 +146,28 @@ Deno.serve(async (req) => {
          )
       }
    }
+
+   else if (feedbackCountResult.count! > maxCount){
+      const { error } = await supabase
+         .from('analyses')
+         .update({status : 'error'})
+         .eq('id', analysisId)
+      if (error){
+         return new Response (
+            JSON.stringify({ message: "Error processing analysis. "}),
+            {
+               status : 404
+            }
+         )
+      }
+      return new Response(
+         JSON.stringify({message: "Feedback count exceeded limit"}),
+         {
+            status : 404
+         }
+      )
+   }
+   
 
    const feedbackItems = await supabase
       .from("feedback_items")
