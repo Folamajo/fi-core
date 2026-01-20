@@ -168,11 +168,17 @@ Deno.serve(async (req) => {
       )
    }
    
-
+   //Get all feedback items 
    const feedbackItems = await supabase
       .from("feedback_items")
       .select('id, feedback_text, created_at' )
       .eq('analysis_id', analysisId)
+
+   
+   let feedbackCharCount: number= 0;
+   for (const feedbackItem of feedbackItems){
+      feedbackCharCount += feedbackItem.feedback_text.length
+   }
 })
 
 
