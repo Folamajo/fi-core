@@ -179,6 +179,27 @@ Deno.serve(async (req) => {
    for (const feedbackItem of feedbackItems){
       feedbackCharCount += feedbackItem.feedback_text.length
    }
+
+   if (feedbackCharCount > 100000){
+      const { error } = await supabase
+         .from('analyses')
+         .update({status: 'error'})
+         .eq('id', analysisId)
+      if(error){
+         return new Response (
+            JSON.stringify({message : "Error processing analysis"}),
+            {
+               status: 404
+            }
+         )
+      }
+      return new Response (
+         JSON.stringify({ message: "Feedback token limit exceeded"}),
+         {
+            status : 404
+         }
+      )
+   }
 })
 
 
