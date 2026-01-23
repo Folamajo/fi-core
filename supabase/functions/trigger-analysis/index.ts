@@ -203,7 +203,7 @@ Deno.serve(async (req) => {
    }
 
    // ADDING SENTIMENT ANALYSIS NEXT 
-   // CREATED SENTIMENT ANALYSIS proces
+   
 })
 
 
