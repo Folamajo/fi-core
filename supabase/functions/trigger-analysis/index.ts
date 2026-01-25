@@ -7,12 +7,38 @@
 
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { create } from "node:domain";
 import { createClient } from 'npm:@supabase/supabase-js@2';
-
-
+import OpenAI from "npm:openai@^4.52.5";
 
 
 Deno.serve(async (req) => {
+
+   const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+   const client = new OpenAI({
+      apiKey: OPENAI_API_KEY
+   });
+
+
+   const feedback_text = "Purchased this for my device, it worked as advertised. You can never have too much phone memory."
+   const response = await client.responses.create({
+      model: "gpt-4.1-mini",
+      input : `Sentiment prompt Task : Analyse and classify the following text ${feedback_text}.
+      Sentiment categories: 
+         - Positive 
+         - Negative 
+         - Neutral 
+      Rules: 
+      - Focus on the sentiment towards the service(this is subject to change but ok for now ) 
+      - If sentiment is mixed choose the dominant one. 
+      - If no clear emotion is present, return Neutral 
+      - Don't add explanations or extra text. 
+   
+      Output should be strictly returned in JSON format allowing us to see sentiment and confidence should be between 0 - 1 with 1 being the highest score here is an example { "sentiment_label": "negative", "confidence" : 0.87 }`
+   })
+  
+
+   console.log(response)
    const { analysisId } = await req.json();
    if (!analysisId){
       return new Response (
@@ -199,18 +225,44 @@ Deno.serve(async (req) => {
             status : 404
          }
       )
-
    }
+   
+
+   
 
    // ADDING SENTIMENT ANALYSIS NEXT 
+
    
 })
 
 
 
+const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+const client = new OpenAI({
+   apiKey: OPENAI_API_KEY
+});
 
 
+const feedback_text = "Purchased this for my device, it worked as advertised. You can never have too much phone memory."
+const response = await client.responses.create({
+   model: "gpt-4.1-mini",
+   input : `Sentiment prompt Task : Analyse and classify the following text ${feedback_text}.
+   Sentiment categories: 
+      - Positive 
+      - Negative 
+      - Neutral 
+   Rules: 
+   - Focus on the sentiment towards the service(this is subject to change but ok for now ) 
+   - If sentiment is mixed choose the dominant one. 
+   - If no clear emotion is present, return Neutral 
+   - Don't add explanations or extra text. 
+   
+   Output should be strictly returned in JSON format allowing us to see sentiment and confidence should be between 0 - 1 with 1 being the highest score here is an example { "sentiment_label": "negative", "confidence" : 0.87 }`
+
+})
   
+
+console.log(response)
 
 
 //GET USER 
