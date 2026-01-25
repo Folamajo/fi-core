@@ -37,7 +37,22 @@ Deno.serve(async (req) => {
       Output should be strictly returned in JSON format allowing us to see sentiment and confidence should be between 0 - 1 with 1 being the highest score here is an example { "sentiment_label": "negative", "confidence" : 0.87 }`
    })
   
-
+   if(response){
+      console.log(response)
+      return new Response(
+         JSON.stringify({message: "got a return"}),
+         {
+            status: response.status
+         }
+      )
+      // return new Response (
+      // JSON.stringify({message: response}),
+      //    {
+      //       status: response.status
+      //    }
+      // )
+   }
+   
    console.log(response)
    const { analysisId } = await req.json();
    if (!analysisId){
