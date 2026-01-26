@@ -135,7 +135,7 @@ Deno.serve(async (req: Request) => {
          console.log(error)
       }
 
-      const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY')
+
    
       
       return new Response(JSON.stringify({success: true, data: {user_id: user.id}, feedback_count: feedbackItemsArray.length}), {

@@ -112,10 +112,11 @@ const UserHome = () => {
             body : JSON.stringify({ feedbackItems : preview }),
             method: 'POST'
          })
-
+         
          if(error){
             console.log(error)
          }
+         console.log(data)
          return {}
       }
       return { }
@@ -197,6 +198,10 @@ const UserHome = () => {
 }
 
 export default UserHome
+
+
+
+
 
 
 

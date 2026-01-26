@@ -233,21 +233,16 @@ Deno.serve(async (req) => {
          })
   
          if(response.output[0].status === "completed"){
-            console.log(response)
+            console.log(response.output[0].content[0].text)
             return new Response(
                JSON.stringify({message: "got a return"}),
                {
                   status: response.status
                }
             )
-      
          }
       }
-      
    }
-   
-
-   
 })
 
 
