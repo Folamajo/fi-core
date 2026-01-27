@@ -125,27 +125,32 @@ Deno.serve(async (req: Request) => {
          )
       }
 
-      const {data, error} = await supabase.rpc('create_project', 
+      const {createResult, createError} = await supabase.rpc('create_project', 
          { 
             project_name: 'project-',
             feedback_items:  feedbackItemsArray
          }
       )
-      if (error){
-         console.log(error)
+      if (createError){
+         console.log(createError)
       }
-
-
+      // return new Response(JSON.stringify({success: true, data: data, feedback_count: feedbackItemsArray.length}), {
+      //    headers: { 
+      //       ...corsHeaders,
+      //       "Content-Type": "application/json"
+      //    },
+      //    status:200
+      // })
+      //CALL the trigger analysis function with the returned body
+      const returnedAnalysisId = createResult[0].analysis_id
+      const { analysisResult, analysisError } = await supabase.rpc('trigger-analysis',
+         {
+            analysisId : returnedAnalysisId
+         }
+      )
    
       
-      return new Response(JSON.stringify({success: true, data: {user_id: user.id}, feedback_count: feedbackItemsArray.length}), {
-         headers: { 
-            ...corsHeaders,
-            "Content-Type": "application/json"
-         },
-         status:200
-      })
-
+    
    }  catch (error) {
       return new Response (
          JSON.stringify({error: error.message}),

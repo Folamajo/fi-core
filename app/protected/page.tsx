@@ -58,7 +58,7 @@ const UserHome = () => {
       }
 
 
-      console.log(selectedFile)
+      // console.log(selectedFile)
 
       const file = selectedFile
       if (file.name.endsWith("csv")){
