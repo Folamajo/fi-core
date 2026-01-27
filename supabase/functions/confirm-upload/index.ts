@@ -125,7 +125,7 @@ Deno.serve(async (req: Request) => {
          )
       }
 
-      const {createResult, createError} = await supabase.rpc('create_project', 
+      const {data: createResult, error: createError} = await supabase.rpc('create_project', 
          { 
             project_name: 'project-',
             feedback_items:  feedbackItemsArray
@@ -143,7 +143,7 @@ Deno.serve(async (req: Request) => {
       // })
       //CALL the trigger analysis function with the returned body
       const returnedAnalysisId = createResult[0].analysis_id
-      const { analysisResult, analysisError } = await supabase.rpc('trigger-analysis',
+      const { data: analysisResult, error: analysisError } = await supabase.rpc('trigger-analysis',
          {
             analysisId : returnedAnalysisId
          }
