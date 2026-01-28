@@ -125,32 +125,54 @@ Deno.serve(async (req: Request) => {
          )
       }
 
-      const {data: createResult, error: createError} = await supabase.rpc('create_project', 
+      const {data: createProjectResult, error: createProjectError} = await supabase.rpc('create_project', 
          { 
             project_name: 'project-',
             feedback_items:  feedbackItemsArray
          }
       )
-      if (createError){
-         console.log(createError)
+      if (createProjectError){
+         console.log(createProjectError)
       }
-      // return new Response(JSON.stringify({success: true, data: data, feedback_count: feedbackItemsArray.length}), {
-      //    headers: { 
-      //       ...corsHeaders,
-      //       "Content-Type": "application/json"
-      //    },
-      //    status:200
-      // })
+
+      console.log(createProjectResult)
+     
+
       //CALL the trigger analysis function with the returned body
-      const returnedAnalysisId = createResult[0].analysis_id
-      const { data: analysisResult, error: analysisError } = await supabase.rpc('trigger-analysis',
-         {
-            analysisId : returnedAnalysisId
+      const returnedAnalysisId = createProjectResult[0].analysis_id
+      if (returnedAnalysisId){
+         const { data, error} = await supabase.functions.invoke('trigger-analysis', {
+            headers: {
+               'Authorization' : `Bearer ${token}`
+            },
+            body : { analysisId : returnedAnalysisId },
+
+         })
+         if(error){
+            console.log(error)
+         }
+         return new Response(
+            JSON.stringify({message: "Analysis completed"}),
+            {
+               status: 200, 
+            }
+         )
+         // console.log(data)
+      }
+      // const { data: analysisResult, error: analysisError } = await supabase.rpc('trigger-analysis',
+      //    {
+      //       analysisId : returnedAnalysisId
+      //    }
+      // )
+      // if (analysisError){
+      //    console.log(analysisError)
+      // }
+      
+      return new Response(
+         JSON.stringify({message: "Analysing data"}),{
+            status: 200
          }
       )
-   
-      
-    
    }  catch (error) {
       return new Response (
          JSON.stringify({error: error.message}),
@@ -173,6 +195,15 @@ Deno.serve(async (req: Request) => {
 
 
 
+
+
+ // return new Response(JSON.stringify({success: true, data: data, feedback_count: feedbackItemsArray.length}), {
+      //    headers: { 
+      //       ...corsHeaders,
+      //       "Content-Type": "application/json"
+      //    },
+      //    status:200
+      // })
 
 
 // const { name } = await req.json()   

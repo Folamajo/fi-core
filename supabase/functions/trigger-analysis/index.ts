@@ -14,9 +14,8 @@ import OpenAI from "npm:openai@^4.52.5";
 
 Deno.serve(async (req) => {
 
-  
-   
-   console.log(response)
+console.log('trigger-analysis hit')   
+   // console.log(response)
    const { analysisId } = await req.json();
    if (!analysisId){
       return new Response (
