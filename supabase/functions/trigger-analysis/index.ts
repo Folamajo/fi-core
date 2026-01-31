@@ -230,7 +230,6 @@ console.log('trigger-analysis hit')
          
             Output should be strictly returned in JSON format allowing us to see sentiment and confidence should be between 0 - 1 with 1 being the highest score here is an example { "sentiment_label": "negative", "confidence" : 0.87 }`
          })
-  
          if(response.output[0].status === "completed"){
             console.log(response.output[0].content[0].text)
             return new Response(
