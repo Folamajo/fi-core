@@ -63,7 +63,7 @@ Deno.serve(async (req: Request) => {
             }
          }
       )
-      console.log(authHeader)
+      console.log(Deno.env.get('SUPABASE_URL'))
    
       
       // Getting the JWT token from the authorization header
@@ -146,7 +146,6 @@ Deno.serve(async (req: Request) => {
                'Authorization' : `Bearer ${token}`
             },
             body : { analysisId : returnedAnalysisId },
-
          })
          if(error){
             console.log(error)

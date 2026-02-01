@@ -14,9 +14,10 @@ import OpenAI from "npm:openai@^4.52.5";
 
 Deno.serve(async (req) => {
 
-console.log('trigger-analysis hit')   
-   // console.log(response)
+// console.log('trigger-analysis hit')   
+
    const { analysisId } = await req.json();
+   // 
    if (!analysisId){
       return new Response (
          JSON.stringify({ message: "missing analysis_id "}),
@@ -28,6 +29,8 @@ console.log('trigger-analysis hit')
 
   // Check for valid authorization in header 
    const authHeader = req.headers.get('Authorization');
+
+
    if(!authHeader){
    return new Response(
       JSON.stringify({message: "No authorization token in request header."}),
@@ -53,37 +56,50 @@ console.log('trigger-analysis hit')
 
    
    const { data : { user } } = await supabase.auth.getUser(jwt)
+
    if(!user){
       return new Response(
          JSON.stringify({message: "User could not be found"}),
          {
-            status: 404,
+            status: 401,
          }
       )
    }
    const userId = user.id;
 
    // Check if analysis exists 
-   const { count, error} = await supabase 
+   const res = await supabase 
       .from('analyses')
-      .select ('id, projects(id, user_id)', {  count: 'exact', head: true})
+      .select ('id, projects(id, user_id)', {  count: 'exact'})
+      // .select ('id, projects(id, user_id)', {  count: 'exact', head: true})
       .eq('projects.user_id', userId)
       .eq('id', analysisId);
 
+   const { count, error} = await supabase 
+      .from('analyses')
+      .select ('id, projects(id, user_id)', {  count: 'exact'})
+      // .select ('id, projects(id, user_id)', {  count: 'exact', head: true})
+      .eq('projects.user_id', userId)
+      .eq('id', analysisId);
+   console.log("analysisId: " + analysisId);
+   console.log("userId: " + userId)
+   console.log("res: " + res.status, res.error, res.data, res.count)
+
+   
    if (error){
       return new Response(
          JSON.stringify({message: "Analysis does not exist for this user"}),
          {
-            status: 404
+            status: 401
          }
       )
    }
 
    if (count === 0){
       return new Response(
-         JSON.stringify({message: "The user has no project with this analysis id"}),
+         JSON.stringify(   {  message: "The user has no project with this analysis id" }  ),
          {
-            status : 404,
+            status : 400,
          }
       )
    }
@@ -96,10 +112,10 @@ console.log('trigger-analysis hit')
 
    //If there is an error fail fast
    if (currentStatus.error){
-      return new Response(
+      return new Response (
          JSON.stringify({message: "Analysis does not exist."}),
          {
-            status : 404
+            status : 400
          }
       )
    }
@@ -114,16 +130,18 @@ console.log('trigger-analysis hit')
          return new Response(
             JSON.stringify({message: "Error processing analysis."}),
             {
-               status : 404
+               status : 500
             }
          )
       }
    }
-   else if (currentStatus.data.status !== 'pending'){
+
+   else if (currentStatus.data.status !== 'pending')
+    {
       return new Response(
          JSON.stringify({message: "Analysis is not ready for available for processing."}),
          {
-            status: 404
+            status: 400
          }
       )
    }
@@ -144,7 +162,7 @@ console.log('trigger-analysis hit')
          return new Response(
             JSON.stringify({message: "Error processing analysis."}),
             {
-               status : 404
+               status : 500
             }
          )
       }
@@ -159,14 +177,14 @@ console.log('trigger-analysis hit')
          return new Response (
             JSON.stringify({ message: "Error processing analysis. "}),
             {
-               status : 404
+               status : 500
             }
          )
       }
       return new Response(
          JSON.stringify({message: "Feedback count exceeded limit"}),
          {
-            status : 404
+            status : 500
          }
       )
    }
@@ -192,14 +210,14 @@ console.log('trigger-analysis hit')
          return new Response (
             JSON.stringify({message : "Error processing analysis"}),
             {
-               status: 404
+               status: 500
             }
          )
       }
       return new Response (
          JSON.stringify({ message: "Feedback token limit exceeded"}),
          {
-            status : 404
+            status : 500
          }
       )
    }
@@ -232,15 +250,17 @@ console.log('trigger-analysis hit')
          })
          if(response.output[0].status === "completed"){
             console.log(response.output[0].content[0].text)
-            return new Response(
-               JSON.stringify({message: "got a return"}),
-               {
-                  status: response.status
-               }
-            )
          }
-      }
+        
+      } 
+      
    }
+   return new Response (
+      JSON.stringify({message: "analysis completed... 2"}),
+      {
+         status : 200
+      }
+   )
 })
 
 
@@ -263,7 +283,15 @@ console.log('trigger-analysis hit')
 
 
 
-
+// if(response.output[0].status === "completed"){
+      //       console.log(response.output[0].content[0].text)
+      //       return new Response(
+      //          JSON.stringify({message: "got a return"}),
+      //          {
+      //             status: response.status
+      //          }
+      //       )
+      //    }
 
 
 

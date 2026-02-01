@@ -119,7 +119,7 @@ const UserHome = () => {
          console.log(data)
          return {}
       }
-      return { }
+      return {}
    }
 
 
@@ -129,8 +129,6 @@ const UserHome = () => {
       <div className="flex gap-5">
          <div>
             <h1>Welcome UserName...</h1>
-      
-
             {
                projects.length === 0 && (
                   <>
@@ -154,7 +152,7 @@ const UserHome = () => {
             </Popover>
          </div>
 
-         {/* Fix RPC FUNCTION        */}
+         {/* Fix RPC FUNCTION  */}
          <div className=" mt-4">
             {
                displayInputBox && (
@@ -162,9 +160,7 @@ const UserHome = () => {
                      <Button onClick = {()=>setDisplayInputBox(false)}>X</Button>
                      <Input className="w-[600px]"/> 
                   </>
-                 
                )
-
             }
             {
                previewMode && (
