@@ -68,12 +68,12 @@ Deno.serve(async (req) => {
    const userId = user.id;
 
    // Check if analysis exists 
-   const res = await supabase 
-      .from('analyses')
-      .select ('id, projects(id, user_id)', {  count: 'exact'})
-      // .select ('id, projects(id, user_id)', {  count: 'exact', head: true})
-      .eq('projects.user_id', userId)
-      .eq('id', analysisId);
+   // const res = await supabase 
+   //    .from('analyses')
+   //    .select ('id, projects(id, user_id)', {  count: 'exact'})
+   //    // .select ('id, projects(id, user_id)', {  count: 'exact', head: true})
+   //    .eq('projects.user_id', userId)
+   //    .eq('id', analysisId);
 
    const { count, error} = await supabase 
       .from('analyses')
@@ -81,9 +81,8 @@ Deno.serve(async (req) => {
       // .select ('id, projects(id, user_id)', {  count: 'exact', head: true})
       .eq('projects.user_id', userId)
       .eq('id', analysisId);
-   console.log("analysisId: " + analysisId);
-   console.log("userId: " + userId)
-   console.log("res: " + res.status, res.error, res.data, res.count)
+
+   // console.log("res: " + res.status, res.error, res.data, res.count)
 
    
    if (error){
@@ -194,73 +193,83 @@ Deno.serve(async (req) => {
       .from("feedback_items")
       .select('id, feedback_text, created_at, sentiment_label' )
       .eq('analysis_id', analysisId)
-
    
    let feedbackCharCount: number= 0;
-   for (const feedbackItem of feedbackItems){
-      feedbackCharCount += feedbackItem.feedback_text.length
-   }
-
-   if (feedbackCharCount > 100000){
-      const { error } = await supabase
-         .from('analyses')
-         .update({status: 'error'})
-         .eq('id', analysisId)
-      if(error){
+   if (feedbackItems.data){
+      for (const feedbackItem of feedbackItems.data){
+         feedbackCharCount += feedbackItem.feedback_text.length
+      }
+   
+      if (feedbackCharCount > 100000){
+         const { error } = await supabase
+            .from('analyses')
+            .update({status: 'error'})
+            .eq('id', analysisId)
+         if(error){
+            return new Response (
+               JSON.stringify({message : "Error processing analysis"}),
+               {
+                  status: 500
+               }
+            )
+         }
          return new Response (
-            JSON.stringify({message : "Error processing analysis"}),
+            JSON.stringify({ message: "Feedback token limit exceeded"}),
             {
-               status: 500
+               status : 500
             }
          )
       }
+      const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+      const client = new OpenAI({
+         apiKey: OPENAI_API_KEY
+      });
+
+      for (const feedbackItem of feedbackItems.data){
+         if(!feedbackItem.sentiment_label){
+            const response = await client.responses.create({
+               model: "gpt-4.1-mini",
+               input : `Sentiment prompt Task : Analyse and classify the following text ${feedbackItem.feedback_text}.
+               Sentiment categories: 
+                  - Positive 
+                  - Negative 
+                  - Neutral 
+               Rules: 
+               - Focus on the sentiment towards the service(this is subject to change but ok for now ) 
+               - If sentiment is mixed choose the dominant one. 
+               - If no clear emotion is present, return Neutral 
+               - Don't add explanations or extra text. 
+            
+               Output should be strictly returned in JSON format allowing us to see sentiment and confidence should be between 0 - 1 with 1 being the highest score here is an example { "sentiment_label": "negative", "confidence" : 0.87 }`
+            })
+            if(response.output[0].status === "completed"){
+               console.log(response.output[0].content[0].text)
+            }
+         
+         } 
+         
+      }
       return new Response (
-         JSON.stringify({ message: "Feedback token limit exceeded"}),
+         JSON.stringify({message: "analysis completed... 2"}),
          {
-            status : 500
+            status : 200
          }
       )
    }
+   return new Response (
+      JSON.stringify({message: "Analysis could not be completed"}),
+      {
+         status : 401
+      }
+   )
+
+   
    
 
    
 
    // ADDING SENTIMENT ANALYSIS NEXT 
-   const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
-   const client = new OpenAI({
-      apiKey: OPENAI_API_KEY
-   });
 
-   for (let feedbackItem of feedbackItems){
-      if(!feedbackItem.sentiment_label){
-         const response = await client.responses.create({
-            model: "gpt-4.1-mini",
-            input : `Sentiment prompt Task : Analyse and classify the following text ${feedbackItem.feedback_text}.
-            Sentiment categories: 
-               - Positive 
-               - Negative 
-               - Neutral 
-            Rules: 
-            - Focus on the sentiment towards the service(this is subject to change but ok for now ) 
-            - If sentiment is mixed choose the dominant one. 
-            - If no clear emotion is present, return Neutral 
-            - Don't add explanations or extra text. 
-         
-            Output should be strictly returned in JSON format allowing us to see sentiment and confidence should be between 0 - 1 with 1 being the highest score here is an example { "sentiment_label": "negative", "confidence" : 0.87 }`
-         })
-         if(response.output[0].status === "completed"){
-            console.log(response.output[0].content[0].text)
-         }
-        
-      } 
-      
-   }
-   return new Response (
-      JSON.stringify({message: "analysis completed... 2"}),
-      {
-         status : 200
-      }
-   )
 })
 
 
