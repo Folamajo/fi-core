@@ -244,6 +244,18 @@ Deno.serve(async (req) => {
             })
             if(response.output[0].status === "completed"){
                console.log(response.output[0].content[0].text)
+               const { error } = await supabase
+                  .from('feedback_items')
+                  .update({status: 'error'})
+                  .eq('id', analysisId)
+                  if(error){
+                     return new Response (
+                        JSON.stringify({message : "Error processing analysis"}),
+                        {
+                           status: 500
+                        }
+                     )
+                  }
             }
          
          } 
