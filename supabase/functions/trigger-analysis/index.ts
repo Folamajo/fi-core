@@ -197,7 +197,7 @@ Deno.serve(async (req) => {
    let feedbackCharCount: number= 0;
    if (feedbackItems.data){
       for (const feedbackItem of feedbackItems.data){
-         feedbackCharCount += feedbackItem.feedback_text.length
+         feedbackCharCount += feedbackItem.feedback_text.length;
       }
    
       if (feedbackCharCount > 100000){
@@ -220,12 +220,15 @@ Deno.serve(async (req) => {
             }
          )
       }
+
+      
       const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
       const client = new OpenAI({
          apiKey: OPENAI_API_KEY
       });
 
       for (const feedbackItem of feedbackItems.data){
+         console.log(feedbackItem.id)
          if(!feedbackItem.sentiment_label){
             const response = await client.responses.create({
                model: "gpt-4.1-mini",
@@ -251,7 +254,7 @@ Deno.serve(async (req) => {
                const { error } = await supabase
                   .from('feedback_items')
                   .update({sentiment_label:  sentiment_label, sentiment_score: confidence })
-                  .eq('analysis_id', analysisId)
+                  .eq('id', feedbackItem.id)
                   if(error){
                      return new Response (
                         JSON.stringify({message : "Error processing analysis"}),
