@@ -243,11 +243,15 @@ Deno.serve(async (req) => {
                Output should be strictly returned in JSON format allowing us to see sentiment and confidence should be between 0 - 1 with 1 being the highest score here is an example { "sentiment_label": "negative", "confidence" : 0.87 }`
             })
             if(response.output[0].status === "completed"){
-               console.log(response.output[0].content[0].text)
+               console.log(response.output[0].content[0].text.split(' '))
+               const sentiment_label = response.output[0].content[0].text.split(' ')[2].replace(/'|"|,/g, "")
+               const confidence = response.output[0].content[0].text.split(' ')[4].replace('"', "")
+               
+               console.log(sentiment_label, confidence)
                const { error } = await supabase
                   .from('feedback_items')
-                  .update({status: 'error'})
-                  .eq('id', analysisId)
+                  .update({sentiment_label:  sentiment_label, sentiment_score: confidence })
+                  .eq('analysis_id', analysisId)
                   if(error){
                      return new Response (
                         JSON.stringify({message : "Error processing analysis"}),
@@ -257,7 +261,6 @@ Deno.serve(async (req) => {
                      )
                   }
             }
-         
          } 
          
       }
