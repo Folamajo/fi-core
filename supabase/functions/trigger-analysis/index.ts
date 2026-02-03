@@ -284,9 +284,7 @@ Deno.serve(async (req) => {
    
    
 
-   
-
-   // ADDING SENTIMENT ANALYSIS NEXT 
+   //ANALYSE SENTIMENT FROM DATABASE
 
 })
 
