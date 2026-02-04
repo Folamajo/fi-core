@@ -227,9 +227,15 @@ Deno.serve(async (req) => {
          apiKey: OPENAI_API_KEY
       });
 
+
+
+
+      let analysesAttempted: number = 0;
+      let successfulAnalyses: number = 0; 
       for (const feedbackItem of feedbackItems.data){
-         console.log(feedbackItem.id)
+         
          if(!feedbackItem.sentiment_label){
+            analysesAttempted += 1;
             const response = await client.responses.create({
                model: "gpt-4.1-mini",
                input : `Sentiment prompt Task : Analyse and classify the following text ${feedbackItem.feedback_text}.
@@ -246,6 +252,7 @@ Deno.serve(async (req) => {
                Output should be strictly returned in JSON format allowing us to see sentiment and confidence should be between 0 - 1 with 1 being the highest score here is an example { "sentiment_label": "negative", "confidence" : 0.87 }`
             })
             if(response.output[0].status === "completed"){
+               successfulAnalyses += 1;
                console.log(response.output[0].content[0].text.split(' '))
                const sentiment_label = response.output[0].content[0].text.split(' ')[2].replace(/'|"|,/g, "")
                const confidence = response.output[0].content[0].text.split(' ')[4].replace('"', "")
@@ -255,18 +262,31 @@ Deno.serve(async (req) => {
                   .from('feedback_items')
                   .update({sentiment_label:  sentiment_label, sentiment_score: confidence })
                   .eq('id', feedbackItem.id)
-                  if(error){
-                     return new Response (
-                        JSON.stringify({message : "Error processing analysis"}),
-                        {
-                           status: 500
-                        }
-                     )
-                  }
+               if(error){
+                 continue
+               }
             }
-         } 
-         
+         }    
       }
+
+      //UPDATE ANALYSES TABLE SO THAT WE KNOW THIS SPECIFIC ANALYSIS HAS BEEN COMPLETED
+      if (successfulAnalyses === 0){
+         // Update the analyses table based on the analysis Id with error 
+         const { error } = await supabase
+            .from('analyses')
+            .update({status: "failed"})
+            .eq('id', analysisId)
+      }
+      else {
+         const { error } = await supabase
+            .from('analyses')
+            .update ({status: "sentiment_complete"})
+            .eq("id", analysisId)
+      }
+
+
+
+
       return new Response (
          JSON.stringify({message: "analysis completed... 2"}),
          {
@@ -284,7 +304,8 @@ Deno.serve(async (req) => {
    
    
 
-   //ANALYSE SENTIMENT FROM DATABASE
+   // ANALYSE SENTIMENT FROM DATABASE
+
 
 })
 
@@ -371,3 +392,9 @@ Deno.serve(async (req) => {
     --data '{"name":"Functions"}'
 
 */
+ // return new Response (
+                  //    JSON.stringify({message : "Error processing analysis"}),
+                  //    {
+                  //       status: 500
+                  //    }
+                  // )
