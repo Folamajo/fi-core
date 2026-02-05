@@ -268,6 +268,7 @@ Deno.serve(async (req) => {
             }
          }    
       }
+      console.log(successfulAnalyses)
 
       //UPDATE ANALYSES TABLE SO THAT WE KNOW THIS SPECIFIC ANALYSIS HAS BEEN COMPLETED
       if (successfulAnalyses === 0){
@@ -304,7 +305,7 @@ Deno.serve(async (req) => {
    
    
 
-   // ANALYSE SENTIMENT FROM DATABASE
+   // ANALYSE SENTIMENT FROM DATABASE FIX ERROR REGARDING LOGGING SENTIMENT LABELS IN DATA BASE 
 
 
 })
